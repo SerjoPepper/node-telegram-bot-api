@@ -65,6 +65,13 @@ TelegramBot.prototype._request = function (path, options) {
     host: 'api.telegram.org',
     pathname: '/bot'+this.token+'/'+path
   });
+  if (options.method === 'POST') {
+    options.formData = options.formData || {};
+    Object.keys(options.qs).forEach(function (k) {
+      options.formData[k] = options.qs[k];
+      delete options.qs[k];
+    });
+  }
   debug('HTTP request: %j', options);
   return requestPromise(options)
     .then(function (resp) {
@@ -138,7 +145,7 @@ TelegramBot.prototype.sendMessage = function (chatId, text, options) {
   var query = options || {};
   query.chat_id = chatId;
   query.text = text;
-  return this._request('sendMessage', {qs: query});
+  return this._request('sendMessage', {qs: query, method: 'POST'});
 };
 
 /**
@@ -155,7 +162,7 @@ TelegramBot.prototype.forwardMessage = function (chatId, fromChatId, messageId) 
     from_chat_id: fromChatId,
     message_id: messageId
   };
-  return this._request('forwardMessage', {qs: query});
+  return this._request('forwardMessage', {qs: query, method: 'POST'});
 };
 
 TelegramBot.prototype._formatSendData = function (type, data) {
@@ -199,7 +206,8 @@ TelegramBot.prototype._formatSendData = function (type, data) {
  */
 TelegramBot.prototype.sendPhoto = function (chatId, photo, options) {
   var opts = {
-    qs: options || {}
+    qs: options || {},
+    method: 'POST'
   };
   opts.qs.chat_id = chatId;
   var content = this._formatSendData('photo', photo);
