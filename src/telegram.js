@@ -60,6 +60,7 @@ TelegramBot.prototype._request = function (path, options) {
     throw new Error('Telegram Bot Token not provided!');
   }
   options = options || {};
+  options.method = options.method || 'POST';
   options.url = URL.format({
     protocol: 'https',
     host: 'api.telegram.org',
