@@ -356,4 +356,13 @@ TelegramBot.prototype.sendLocation = function (chatId, latitude, longitude, opti
   return this._request('sendLocation', {qs: query});
 };
 
+/**
+ * Stop listening
+ */
+TelegramBot.prototype.destroy = function () {
+  if (this._polling) {
+    this._polling.destroy();
+  }
+}
+
 module.exports = TelegramBot;
