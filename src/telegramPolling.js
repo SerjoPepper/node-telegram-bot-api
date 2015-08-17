@@ -36,7 +36,9 @@ TelegramBotPolling.prototype._polling = function () {
     debug('polling error: %j', err);
   }).finally(function () {
     debug('setTimeout for %s miliseconds', self.interval);
-    setTimeout(self._polling.bind(self), self.interval);
+    if (!self._destroyed) {
+      setTimeout(self._polling.bind(self), self.interval);
+    }
   });
 };
 
@@ -65,6 +67,10 @@ TelegramBotPolling.prototype._getUpdates = function () {
       throw new Error(data.error_code+' '+data.description);
     }
   });
+};
+
+TelegramBotPolling.prototype.destroy = function () {
+  this._destroyed = true;
 };
 
 module.exports = TelegramBotPolling;
