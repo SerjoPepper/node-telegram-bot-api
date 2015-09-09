@@ -68,7 +68,7 @@ TelegramBot.prototype._request = function (path, options) {
   });
   if (options.method === 'POST') {
     options.formData = options.formData || {};
-    Object.keys(options.qs).forEach(function (k) {
+    Object.keys(options.qs || {}).forEach(function (k) {
       options.formData[k] = options.qs[k];
       delete options.qs[k];
     });
@@ -95,7 +95,7 @@ TelegramBot.prototype._request = function (path, options) {
  */
 TelegramBot.prototype.getMe = function () {
   var path = 'getMe';
-  return this._request(path);
+  return this._request(path, {method: 'GET'});
 };
 
 /**
