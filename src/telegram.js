@@ -67,9 +67,11 @@ TelegramBot.prototype._request = function (path, options) {
     pathname: '/bot'+this.token+'/'+path
   });
   if (options.method === 'POST') {
-    options.formData = options.formData || {};
     Object.keys(options.qs || {}).forEach(function (k) {
-      options.formData[k] = options.qs[k];
+      if (options.qs[k] !== undefined) {
+        options.formData = options.formData || {};
+        options.formData[k] = options.qs[k];  
+      }
       delete options.qs[k];
     });
   }
@@ -95,7 +97,7 @@ TelegramBot.prototype._request = function (path, options) {
  */
 TelegramBot.prototype.getMe = function () {
   var path = 'getMe';
-  return this._request(path, {method: 'GET'});
+  return this._request(path);
 };
 
 /**
