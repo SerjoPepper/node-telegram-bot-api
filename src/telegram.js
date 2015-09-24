@@ -339,6 +339,13 @@ TelegramBot.prototype.getUserProfilePhotos = function (userId, offset, limit) {
   return this._request('getUserProfilePhotos', {qs: query});
 };
 
+TelegramBot.prototype.getFile = function (fileId) {
+  var query = {
+    file_id: fileId
+  };
+  return this._request('getFile', {qs: query});
+};
+
 /**
  * Send location.
  * Use this method to send point on the map.
