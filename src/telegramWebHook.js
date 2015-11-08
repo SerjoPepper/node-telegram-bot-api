@@ -63,4 +63,8 @@ TelegramBotWebHook.prototype._requestListener = function (req, res) {
   }
 };
 
+TelegramBotWebHook.prototype.destroy = function() {
+  this._webServer.close();
+};
+
 module.exports = TelegramBotWebHook;

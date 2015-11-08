@@ -41,7 +41,7 @@ var TelegramBot = function (token, options) {
   }
 
   if (options.webHook) {
-    this._WebHook = new TelegramBotWebHook(token, options.webHook, processUpdate);
+    this._webHook = new TelegramBotWebHook(token, options.webHook, processUpdate);
   }
 };
 
@@ -67,10 +67,11 @@ TelegramBot.prototype._request = function (path, options) {
     pathname: '/bot'+this.token+'/'+path
   });
   if (options.method === 'POST') {
+    options.formData = options.formData || {};
     Object.keys(options.qs || {}).forEach(function (k) {
       if (options.qs[k] !== undefined) {
         options.formData = options.formData || {};
-        options.formData[k] = options.qs[k];  
+        options.formData[k] = options.qs[k];
       }
       delete options.qs[k];
     });
@@ -104,12 +105,18 @@ TelegramBot.prototype.getMe = function () {
  * Specify an url to receive incoming updates via an outgoing webHook.
  * @param {String} url URL where Telegram will make HTTP Post. Leave empty to
  * delete webHook.
+ * @param {String|stream.Stream} [cert] PEM certificate key (public).
  * @see https://core.telegram.org/bots/api#setwebhook
  */
-TelegramBot.prototype.setWebHook = function (url) {
+TelegramBot.prototype.setWebHook = function (url, cert) {
   var path = 'setWebHook';
-  var qs = {url: url};
-  return this._request(path, {qs: qs})
+  var opts = {qs: {url: url}};
+  if (cert) {
+    var content = this._formatSendData('certificate', cert);
+    opts.formData = content[0];
+    opts.qs.certificate = content[1];
+  }
+  return this._request(path, opts)
     .then(function (resp) {
       if (!resp) {
         throw new Error(resp);
@@ -182,7 +189,7 @@ TelegramBot.prototype._formatSendData = function (type, data) {
         contentType: mime.lookup(fileName)
       }
     };
-  } else if (data.indexOf('/') === 0) {
+  } else if (fs.existsSync(data)) {
     fileName = path.basename(data);
     formData = {};
     formData[type] = {
@@ -280,7 +287,7 @@ TelegramBot.prototype.sendSticker = function (chatId, sticker, options) {
 };
 
 /**
- * Send video files, Telegram clients support mp4 videos (other formats may be sent whith `sendDocument`)
+ * Send video files, Telegram clients support mp4 videos (other formats may be sent with `sendDocument`)
  * @param  {Number|String} chatId  Unique identifier for the message recipient
  * @param  {String|stream.Stream} A file path or a Stream. Can
  * also be a `file_id` previously uploaded.
@@ -371,6 +378,9 @@ TelegramBot.prototype.sendLocation = function (chatId, latitude, longitude, opti
 TelegramBot.prototype.destroy = function () {
   if (this._polling) {
     this._polling.destroy();
+  }
+  if (this._webHook) {
+    this._webHook.destroy();
   }
 }
 
