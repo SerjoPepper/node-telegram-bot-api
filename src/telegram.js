@@ -109,7 +109,7 @@ TelegramBot.prototype.getMe = function () {
  * @see https://core.telegram.org/bots/api#setwebhook
  */
 TelegramBot.prototype.setWebHook = function (url, cert) {
-  var path = 'setWebHook';
+  var path = 'setWebhook';
   var opts = {qs: {url: url}};
   if (cert) {
     var content = this._formatSendData('certificate', cert);
