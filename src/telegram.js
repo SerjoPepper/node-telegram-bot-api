@@ -76,6 +76,9 @@ TelegramBot.prototype._request = function (path, options) {
       delete options.qs[k];
     });
   }
+  if (options.formData && !Object.keys(options.formData).length) {
+    delete options.formData;
+  }
   debug('HTTP request: %j', options);
   return requestPromise(options)
     .then(function (resp) {
