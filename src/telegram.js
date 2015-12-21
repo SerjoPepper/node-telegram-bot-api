@@ -3,7 +3,7 @@ var TelegramBotPolling = require('./telegramPolling');
 var debug = require('debug')('node-telegram-bot-api');
 var EventEmitter = require('events').EventEmitter;
 var Promise = require("bluebird");
-var request = require("request");
+var request = require("requestretry");
 var stream = require('stream');
 var util = require('util');
 var mime = require('mime');
@@ -79,6 +79,11 @@ TelegramBot.prototype._request = function (path, options) {
   if (options.formData && !Object.keys(options.formData).length) {
     delete options.formData;
   }
+
+  options.maxAttempts = 20;   // (default) try 5 times
+  options.retryDelay = 1000;  // (default) wait for 5s before trying again
+  options.retryStrategy = request.RetryStrategies.NetworkError; // (default) retry on 5xx or network errors
+
   debug('HTTP request: %j', options);
   return requestPromise(options)
     .then(function (resp) {
