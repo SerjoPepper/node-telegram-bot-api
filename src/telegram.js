@@ -115,6 +115,9 @@ TelegramBot.prototype._request = function (path, options) {
   }
   options.url = this._buildURL(path);
   debug('HTTP request: %j', options);
+  options.maxAttempts = 20;   // (default) try 5 times
+  options.retryDelay = 1000;  // (default) wait for 5s before trying again
+  options.retryStrategy = request.RetryStrategies.NetworkError; // (default) retry on 5xx or network errors
   return requestPromise(options)
     .then(function (resp) {
       if (resp[0].statusCode !== 200) {
