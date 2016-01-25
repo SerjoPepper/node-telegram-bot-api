@@ -150,7 +150,6 @@ TelegramBot.prototype.setWebHook = function (url, cert) {
   if (cert) {
     var content = this._formatSendData('certificate', cert);
     opts.formData = content[0];
-    opts.qs.certificate = content[1];
   }
   return this._request(path, opts)
     .then(function (resp) {
