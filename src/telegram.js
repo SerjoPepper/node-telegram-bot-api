@@ -241,7 +241,7 @@ TelegramBot.prototype._formatSendData = function (type, data) {
         contentType: mime.lookup(fileName)
       }
     };
-  } else if (fs.existsSync(data)) {
+  } else if (data.indexOf('/') === 0) {
     fileName = path.basename(data);
     formData = {};
     formData[type] = {
