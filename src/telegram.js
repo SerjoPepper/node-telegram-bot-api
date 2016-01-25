@@ -48,10 +48,38 @@ var TelegramBot = function (token, options) {
 util.inherits(TelegramBot, EventEmitter);
 
 TelegramBot.prototype._processUpdate = function (update) {
-  debug('Process Update', update);
-  debug('Process Update message', update.message);
-  if (update.message) {
-    this.emit('message', update.message);
+  debug('Process Update %j', update);
+  var message = update.message;
+  var inline_query = update.inline_query;
+  var chosen_inline_result = update.chosen_inline_result;
+
+  if (message) {
+    debug('Process Update message %j', message);
+    this.emit('message', message);
+    var processMessageType = function (messageType) {
+      if (message[messageType]) {
+        debug('Emtting %s: %j', messageType, message);
+        this.emit(messageType, message);
+      }
+    };
+    this.messageTypes.forEach(processMessageType.bind(this));
+    if (message.text) {
+      debug('Text message');
+      this.textRegexpCallbacks.forEach(function (reg) {
+        debug('Matching %s whith', message.text, reg.regexp);
+        var result = reg.regexp.exec(message.text);
+        if (result) {
+          debug('Matches', reg.regexp);
+          reg.callback(message, result);
+        }
+      });
+    }
+  } else if(inline_query) {
+    debug('Process Update inline_query %j', inline_query);
+    this.emit('inline_query', inline_query);
+  } else if(chosen_inline_result) {
+    debug('Process Update chosen_inline_result %j', chosen_inline_result);
+    this.emit('chosen_inline_result', chosen_inline_result);
   }
 };
 
