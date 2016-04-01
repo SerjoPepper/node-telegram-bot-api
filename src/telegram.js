@@ -47,6 +47,12 @@ var TelegramBot = function (token, options) {
 
 util.inherits(TelegramBot, EventEmitter);
 
+TelegramBot.prototype.messageTypes = [
+  'text', 'audio', 'document', 'photo', 'sticker', 'video', 'voice', 'contact',
+  'location', 'new_chat_participant', 'left_chat_participant', 'new_chat_title',
+  'new_chat_photo', 'delete_chat_photo', 'group_chat_created'
+];
+
 TelegramBot.prototype._processUpdate = function (update) {
   debug('Process Update %j', update);
   var message = update.message;
