@@ -52,6 +52,7 @@ TelegramBot.prototype.messageTypes = [
   'location', 'new_chat_participant', 'left_chat_participant', 'new_chat_title',
   'new_chat_photo', 'delete_chat_photo', 'group_chat_created'
 ];
+TelegramBot.prototype.textRegexpCallbacks = [];
 
 TelegramBot.prototype._processUpdate = function (update) {
   debug('Process Update %j', update);
@@ -131,6 +132,10 @@ TelegramBot.prototype._request = function (path, options) {
         throw new Error(data.error_code+' '+data.description);
       }
     });
+};
+
+TelegramBot.prototype.onText = function (regexp, callback) {
+    this.textRegexpCallbacks.push({ regexp, callback });
 };
 
 /**
