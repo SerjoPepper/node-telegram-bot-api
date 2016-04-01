@@ -135,7 +135,7 @@ TelegramBot.prototype._request = function (path, options) {
 };
 
 TelegramBot.prototype.onText = function (regexp, callback) {
-    this.textRegexpCallbacks.push({ regexp, callback });
+    this.textRegexpCallbacks.push({regexp: regexp, callback: callback});
 };
 
 /**
