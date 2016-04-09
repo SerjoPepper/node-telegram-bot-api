@@ -101,7 +101,12 @@ TelegramBot.prototype._request = function (path, options) {
     host: 'api.telegram.org',
     pathname: '/bot'+this.token+'/'+path
   });
-  if (options.method === 'POST') {
+  
+  var fdata = options.formData || {};
+  var fileSend = Object.keys(fdata).some(function (k) {
+    return fdata[k].value instanceof stream.Stream || Buffer.isBuffer(fdata[k].value);
+  });
+  if (options.method === 'POST' && !fileSend) {
     options.formData = options.formData || {};
     Object.keys(options.qs || {}).forEach(function (k) {
       if (options.qs[k] !== undefined) {
@@ -111,7 +116,7 @@ TelegramBot.prototype._request = function (path, options) {
       delete options.qs[k];
     });
   }
-  if (options.formData && !Object.keys(options.formData).length) {
+  if (!fileSend && options.formData && !Object.keys(options.formData).length) {
     delete options.formData;
   }
 
