@@ -106,6 +106,8 @@ TelegramBot.prototype._request = function (path, options) {
   var fileSend = Object.keys(fdata).some(function (k) {
     return fdata[k].value instanceof stream.Stream || Buffer.isBuffer(fdata[k].value);
   });
+  debug('file send', fileSend)
+  fileSend = false;
   if (options.method === 'POST' && !fileSend) {
     options.formData = options.formData || {};
     Object.keys(options.qs || {}).forEach(function (k) {
@@ -116,6 +118,11 @@ TelegramBot.prototype._request = function (path, options) {
       delete options.qs[k];
     });
   }
+  Object.keys(options.qs || {}).forEach(function (key) {
+   if (options.qs[key] === undefined) {
+     delete options.qs[key];
+   }
+  });
   if (!fileSend && options.formData && !Object.keys(options.formData).length) {
     delete options.formData;
   }
